@@ -3,110 +3,59 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>全方位限制测试</title>
+    <title>摄像头拍照示例</title>
     <style>
         body {
             text-align: center;
             font-family: Arial, sans-serif;
             margin-top: 50px;
         }
-        h1 {
-            color: red;
-            font-size: 36px;
-            text-shadow: 2px 2px black;
+        video, canvas {
+            margin-top: 20px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
         }
     </style>
 </head>
 <body>
 
-    <h1>手机安全性能测试中...</h1>
+    <h1>摄像头拍照测试</h1>
+    <button id="startButton">启动摄像头</button>
+    <button id="captureButton" disabled>拍照</button>
+
+    <div>
+        <video id="video" width="640" height="480" autoplay></video>
+        <canvas id="canvas" width="640" height="480"></canvas>
+    </div>
 
     <script>
-        // 强制全屏模式
-        function goFullScreen() {
-            if (document.documentElement.requestFullscreen) {
-                document.documentElement.requestFullscreen();
-            } else if (document.documentElement.mozRequestFullScreen) {
-                document.documentElement.mozRequestFullScreen();
-            } else if (document.documentElement.webkitRequestFullscreen) {
-                document.documentElement.webkitRequestFullscreen();
-            } else if (document.documentElement.msRequestFullscreen) {
-                document.documentElement.msRequestFullscreen();
-            }
-        }
+        const video = document.getElementById('video');
+        const canvas = document.getElementById('canvas');
+        const captureButton = document.getElementById('captureButton');
+        const startButton = document.getElementById('startButton');
+        const context = canvas.getContext('2d');
 
-        // 检测退出全屏，并强制重新进入全屏
-        function detectExitFullscreen() {
-            document.addEventListener('fullscreenchange', function() {
-                if (!document.fullscreenElement) {
-                    goFullScreen(); // 如果退出全屏，立刻重新进入全屏
-                }
-            });
-            document.addEventListener('webkitfullscreenchange', function() {
-                if (!document.webkitIsFullScreen) {
-                    goFullScreen();
-                }
-            });
-            document.addEventListener('mozfullscreenchange', function() {
-                if (!document.mozFullScreen) {
-                    goFullScreen();
-                }
-            });
-            document.addEventListener('MSFullscreenChange', function() {
-                if (!document.msFullscreenElement) {
-                    goFullScreen();
-                }
-            });
-        }
-
-        // 不断弹出对话框，尽可能频繁
-        function spamAlerts() {
-            setInterval(function() {
-                alert("你不能退出！");
-            }, 100);  // 尽可能快地每100毫秒弹出对话框（浏览器可能会限制）
-        }
-
-        // 强制手机震动
-        function startVibration() {
-            if (navigator.vibrate) {
-                setInterval(function() {
-                    navigator.vibrate([500, 200, 500]); // 震动模式循环
-                }, 1000);  // 每秒震动一次
-            }
-        }
-
-        // 阻止返回键
-        window.history.pushState(null, null, window.location.href);
-        window.addEventListener('popstate', function(event) {
-            window.history.pushState(null, null, window.location.href);
-            alert("你不能返回！");
-        });
-
-        // 页面卸载阻止
-        window.onbeforeunload = function() {
-            return "你确定要关闭页面吗？";
-        };
-
-        // 摄像头访问（仅当用户同意时）
-        function requestCameraAccess() {
+        // 请求摄像头权限
+        function startCamera() {
             navigator.mediaDevices.getUserMedia({ video: true })
                 .then(function(stream) {
-                    let video = document.createElement('video');
                     video.srcObject = stream;
-                    video.play();
-                    document.body.appendChild(video);
+                    captureButton.disabled = false;  // 允许拍照按钮
                 })
                 .catch(function(err) {
-                    alert("访问摄像头失败：" + err);
+                    alert("无法访问摄像头: " + err);
                 });
         }
 
-        // 初始化功能
-        goFullScreen(); // 强制全屏
-        detectExitFullscreen(); // 监听全屏退出
-        startVibration(); // 启动震动
-        spamAlerts(); // 弹出对话框
-        requestCameraAccess(); // 请求摄像头权限
+        // 拍照并显示在canvas上
+        function capturePhoto() {
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+        }
+
+        startButton.addEventListener('click', startCamera);
+        captureButton.addEventListener('click', capturePhoto);
     </script>
 
 </body>
