@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>搞怪页面 - 你逃不掉！</title>
+    <title>无限放大，全屏搞怪页面</title>
     <style>
         body {
             text-align: center;
@@ -36,7 +36,7 @@
 </head>
 <body>
 
-    <h1>你真的以为能关闭我吗？</h1>
+    <h1>你以为能关闭我吗？试试吧！</h1>
     <button id="prankButton" class="prank-button">试试点我关闭</button>
 
     <script>
@@ -57,11 +57,6 @@
         setTimeout(goFullScreen, 1000);  // 1秒后进入全屏
         setInterval(goFullScreen, 5000); // 每5秒重新全屏
 
-        // 不停弹出警告框
-        setInterval(function() {
-            alert("你真的要离开吗？再考虑一下吧！");
-        }, 10000);  // 每10秒弹出警告框
-
         // 阻止页面卸载和返回键事件
         window.onbeforeunload = function() {
             setTimeout(goFullScreen, 1000); // 1秒后重新全屏
@@ -74,6 +69,11 @@
             window.history.pushState(null, null, window.location.href);
             alert("返回无效！你还在这里！");
         });
+
+        // 无限放大效果：动态修改viewport
+        setInterval(function() {
+            document.querySelector("meta[name='viewport']").setAttribute("content", "width=device-width, initial-scale=5.0, maximum-scale=10.0");
+        }, 1000); // 每隔1秒放大页面
 
         // 移动的按钮
         const prankButton = document.getElementById('prankButton');
@@ -91,7 +91,7 @@
                 e.preventDefault();
             }
         }, { passive: false });
-        
+
         document.addEventListener('touchend', function(e) {
             if (e.touches.length > 1) {
                 e.preventDefault();
