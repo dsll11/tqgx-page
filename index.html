@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>搞怪网页</title>
+    <style>
+        body {
+            text-align: center;
+            font-family: Arial, sans-serif;
+            margin-top: 50px;
+        }
+        h1 {
+            color: red;
+            font-size: 36px;
+        }
+        .prank-text {
+            position: absolute;
+            font-size: 24px;
+            color: #FF0000;
+            animation: float 2s infinite;
+        }
+        .button {
+            padding: 10px 20px;
+            font-size: 18px;
+            cursor: pointer;
+            background-color: #FF5733;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+        @keyframes float {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+            100% { transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+    <h1>你以为能关闭我吗？</h1>
+    <button id="prankButton" class="button">点我关闭！</button>
+
+    <script>
+        // 弹出搞笑消息
+        const messages = [
+            "哈哈，你抓不到我！😜",
+            "再试一次！😂",
+            "生气了吗？🤣",
+            "没那么容易！🙈",
+            "我会一直在！😎"
+        ];
+
+        const button = document.getElementById('prankButton');
+        button.addEventListener('click', function() {
+            alert(messages[Math.floor(Math.random() * messages.length)]);
+            moveButton();
+        });
+
+        function moveButton() {
+            const x = Math.random() * (window.innerWidth - 150);
+            const y = Math.random() * (window.innerHeight - 50);
+            button.style.position = 'absolute';
+            button.style.left = `${x}px`;
+            button.style.top = `${y}px`;
+        }
+
+        // 强制全屏
+        function goFullScreen() {
+            if (document.documentElement.requestFullscreen) {
+                document.documentElement.requestFullscreen();
+            } else if (document.documentElement.mozRequestFullScreen) {
+                document.documentElement.mozRequestFullScreen();
+            } else if (document.documentElement.webkitRequestFullscreen) {
+                document.documentElement.webkitRequestFullscreen();
+            } else if (document.documentElement.msRequestFullscreen) {
+                document.documentElement.msRequestFullscreen();
+            }
+        }
+        setTimeout(goFullScreen, 3000);  // 3秒后全屏
+
+        // 不断弹出新窗口
+        window.onbeforeunload = function() {
+            openNewWindows();
+            return "你真的要离开吗？再考虑一下吧！😊";
+        };
+
+        // 弹出更多窗口
+        function openNewWindows() {
+            for (let i = 0; i < 3; i++) {
+                window.open(window.location.href, "_blank", "width=500,height=500");
+            }
+        }
+
+        // 5秒弹出确认框
+        setInterval(function() {
+            if (confirm("确定要继续吗？")) {
+                alert("你选择了继续！");
+            } else {
+                alert("再试试吧！");
+            }
+        }, 5000);
+    </script>
+
+</body>
+</html>
