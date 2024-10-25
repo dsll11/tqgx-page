@@ -66,15 +66,43 @@
             }
         }
 
-        // 当用户退出全屏时重新进入全屏
-        document.addEventListener('fullscreenchange', function() {
-            if (!document.fullscreenElement) {
-                goFullScreen(); // 如果退出全屏，则重新进入全屏
-            }
-        });
+        // 当用户退出全屏时，立刻重新进入全屏
+        function detectExitFullscreen() {
+            document.addEventListener('fullscreenchange', function() {
+                if (!document.fullscreenElement) {
+                    goFullScreen(); // 如果退出全屏，则重新进入全屏
+                }
+            });
+            document.addEventListener('webkitfullscreenchange', function() {
+                if (!document.webkitIsFullScreen) {
+                    goFullScreen();
+                }
+            });
+            document.addEventListener('mozfullscreenchange', function() {
+                if (!document.mozFullScreen) {
+                    goFullScreen();
+                }
+            });
+            document.addEventListener('MSFullscreenChange', function() {
+                if (!document.msFullscreenElement) {
+                    goFullScreen();
+                }
+            });
+        }
 
-        // 每5秒重新全屏一次
-        setInterval(goFullScreen, 5000); // 强制全屏
+        // 监听 Esc 键，立即重新全屏
+        function listenForEscKey() {
+            document.addEventListener('keydown', function(event) {
+                if (event.key === 'Escape' || event.key === 'Esc') {
+                    goFullScreen(); // 按下 Esc 后立刻重新全屏
+                }
+            });
+        }
+
+        // 初始化强制全屏和检测
+        goFullScreen(); // 立即全屏
+        detectExitFullscreen(); // 监听退出全屏事件
+        listenForEscKey(); // 监听 Esc 键按下事件
 
         // 捕获安卓浏览器的返回键，自动重定向回当前页面
         window.history.pushState(null, null, window.location.href);
